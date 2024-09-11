@@ -66,7 +66,7 @@ jobs:
         run: |
           # show coverage report in terminal and write report to HTML;
           # write pytest report to txt
-          python -m pytest -m -c pytest_ci.ini -x -v --cov-report term --cov-report html:./reports/coverage_report --cov | tee ./reports/pytest_report.txt
+          python -m pytest -c pytest_ci.ini -x -v --cov-report term --cov-report html:./reports/coverage_report --cov | tee ./reports/pytest_report.txt
       
       # archives all report files to an artifact
       - name: Archive reports
