@@ -15,7 +15,6 @@ import pytest
 
 # ### Import packages and modules for unit testing
 
-import hashlib
 from datetime import datetime
 
 import geopandas as gpd
@@ -82,8 +81,8 @@ def create_query_constructor_test_case(test_resources_dir):
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aoi1_point.geojson'))
             test_case['settings'] = {'aoi': gdf['geometry'].values.tolist()[0],
-                                     'collection': 'sentinel-2',
-                                     'product_type': 'l1c',
+                                     'collection': 's2',
+                                     'product_type': 'level1c',
                                      'sensing_end_date': ('2020-05-01T03:24:33.998Z', '2020-08-11T22:00:11.633Z'),
                                      'cloud_cover': (10, 22),
                                     }
@@ -93,7 +92,7 @@ def create_query_constructor_test_case(test_resources_dir):
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aoi2_polygon.geojson'))
             test_case['settings'] = {'aoi': gdf['geometry'].values.tolist()[0],
-                                    'collection': 'sentinel-1',
+                                    'collection': 's1',
                                     'product_type': 'grd',
                                     'sensing_end_date': (datetime(2016, 9, 28), datetime(2016, 10, 23, 21, 31, 22)),
                                     'attribute': [{'name': 'orbitDirection', 'operator': 'eq', 'value': 'ASCENDING', 'attribute_type': 'String'}]
@@ -129,12 +128,22 @@ def create_query_constructor_test_case(test_resources_dir):
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aoi5_multipolygon2.geojson'))
             test_case['settings'] = {'aoi': gdf['geometry'].values.tolist()[0],
                                     'collection': 'sentinel-5p',
-                                    'product_type': 'L2__CH4___',
+                                    'product_type': 'L2CH4',
                                     'sensing_end_date': (datetime(2021, 12, 15), datetime(2022, 1, 5, 23, 59, 59)),
                                     }
             test_case['n_products'] = 44
             test_case['aoi_coverage'] = 1.0
         elif test_case == 'test_case7':
+            test_case = {}
+            gdf = gpd.read_file(os.path.join(test_resources_dir, 'aoi1_point.geojson'))
+            test_case['settings'] = {'aoi': gdf['geometry'].values.tolist()[0],
+                                    'collection': 'l8',
+                                    'product_type': 'L1 GT',
+                                    'sensing_end_date': ('2015-05-05T19:33:12.021Z', datetime(2015, 6, 28)),
+                                    }
+            test_case['n_products'] = 6
+            test_case['aoi_coverage'] = 1.0
+        elif test_case == 'test_case8':
             test_case = {}
             test_case['settings'] = {'product_names': ['S2B_MSIL1C_20230101T102339_N0509_R065_T32UNU_20230101T105601.SAFE',
                                                        'S1A_IW_GRDH_1SDV_20240208T053520_20240208T053545_052463_065842_F89D.SAFE',
@@ -163,6 +172,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                        'test_case5',
                                        'test_case6',
                                        'test_case7',
+                                       'test_case8',
                                        ])
 def test_query_constructor(test_case, create_query_constructor_test_case):
     """
