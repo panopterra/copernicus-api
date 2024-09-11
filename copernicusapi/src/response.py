@@ -71,7 +71,7 @@ def get_cloud_cover(attributes : list[dict]) -> float:
         return np.nan
 
 
-def determine_group_identifier(name : str) -> str:
+def determine_group_tile_identifier(name : str) -> str:
     """
     Retrieves the unique group/tile identification information from a product name.
     NOTE: intended for use in pandas/geopandas .apply().
@@ -84,7 +84,7 @@ def determine_group_identifier(name : str) -> str:
     Returns
     -------
     str
-        The unique group identifier.
+        The unique group tile identifier.
 
     Notes
     -----
@@ -94,7 +94,10 @@ def determine_group_identifier(name : str) -> str:
     name_parts = [p for p in name.split('_') if len(p) > 0]
     name_parts = name.split('_')
     if name.startswith('S1'):
-        return name_parts[7]
+        if len(name_parts) > 7:
+            return name_parts[7]
+        else:
+            return name_parts[-1]
     elif name.startswith('S2'):
         return '_'.join(name_parts[4:6])
     elif name.startswith('S3'):
