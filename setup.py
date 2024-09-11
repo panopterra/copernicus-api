@@ -6,7 +6,7 @@ with open('README.md', 'r') as f:
 
 # run setup
 setup(name='copernicusapi',
-      version='0.0.7',
+      version='0.0.1',
       description='A package to facilitate interactive construction of queries to the Copernicus Data Space Ecosystem repository.',
       package_dir={'copernicusapi': 'copernicusapi'},
       packages=find_packages(),
@@ -34,9 +34,9 @@ setup(name='copernicusapi',
                         'shapely>=2.0',
                         ],
       extras_require={
-          'dev': ['black>=',
+          'dev': ['black>=24.0',
                   'flake>=7.0',
-                  'pytest-cov>=4.1'
+                  'pytest-cov>=4.1',
                   'twine>=5.1',
                   'pytest>=8.0']
                   },
