@@ -74,7 +74,7 @@ class QueryConstructor:
         sent (in seconds).
     max_retries : int; default=3
         The number of retries in case of any issues during API requests.
-    decimals : int; default=4
+    decimals : int; default=6
         The number of decimals to use in AOI coordinates (i.e. coordinate precision).
         NOTE: decimal places are cut off, not rounded.
 
@@ -118,7 +118,7 @@ class QueryConstructor:
                  interactive : bool = False,
                  request_timeout : int = 60,
                  max_retries : int = 3,
-                 decimals : int = 4) -> None:
+                 decimals : int = 6) -> None:
 
         self.interactive = interactive
         self.request_timeout = request_timeout
@@ -199,15 +199,18 @@ class QueryConstructor:
         Returns the total AOI coverage of all products in the current query as
         a fraction. If no products are found or no AOI was set, returns 0.
         """
-
-        if self._products is None or 'aoi' not in self.query_settings:
+        
+        if self._products is None or self.query_settings['aoi'] is None:
             print('No products found or no AOI set. AOI coverage of 0.')
             return 0.
         elif len(self._products) == 0:
             print('No products found. AOI coverage of 0.')
             return 0.
         else:
-            return np.round(self._products.unary_union.intersection(self.query_settings['aoi']).area / self.query_settings['aoi'].area, 5)
+            if self.query_settings['aoi'].area == 0:
+                return 1.
+            else:
+                return np.round(self._products.unary_union.intersection(self.query_settings['aoi']).area / self.query_settings['aoi'].area, 5)
     
     @property
     def products(self):
@@ -273,7 +276,7 @@ class QueryConstructor:
         decimals : int; default=None
             The number of decimals to use in AOI coordinates (i.e. coordinate precision).
             If None, uses the number of decimals provided during initialization
-            (default: 4).
+            (default: 6).
             NOTE: decimal places are cut off, not rounded.
 
         Returns

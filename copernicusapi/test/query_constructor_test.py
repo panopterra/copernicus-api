@@ -19,6 +19,7 @@ import hashlib
 from datetime import datetime
 
 import geopandas as gpd
+import numpy as np
 
 from copernicusapi.src.query_constructor import QueryConstructor
 
@@ -70,12 +71,13 @@ def create_query_constructor_test_case(test_resources_dir):
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aois', 'aoi1_point.geojson'))
             test_case['settings'] = {'aoi': gdf['geometry'].values.tolist()[0],
-                                    'collection': 'sentinel-2',
-                                    'product_type': 'l2a',
-                                    'sensing_start_date': (datetime(2023, 7, 5), '2023-10-28T19:33:12.021Z'),
-                                    'cloud_cover': 35
+                                     'collection': 'sentinel-2',
+                                     'product_type': 'l2a',
+                                     'sensing_start_date': (datetime(2023, 7, 5), '2023-10-28T19:33:12.021Z'),
+                                     'cloud_cover': 35
                                     }
             test_case['n_products'] = 9
+            test_case['aoi_coverage'] = 1.0
         elif test_case == 'test_case2':
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aois', 'aoi1_point.geojson'))
@@ -86,6 +88,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                      'cloud_cover': (10, 22),
                                     }
             test_case['n_products'] = 4
+            test_case['aoi_coverage'] = 1.0
         elif test_case == 'test_case3':
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aois', 'aoi2_polygon.geojson'))
@@ -96,6 +99,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                     'attribute': [{'name': 'orbitDirection', 'operator': 'eq', 'value': 'ASCENDING', 'attribute_type': 'String'}]
                                     }
             test_case['n_products'] = 7
+            test_case['aoi_coverage'] = 0.999
         elif test_case == 'test_case4':
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aois', 'aoi3_self_intersecting_polygon.geojson'))
@@ -106,6 +110,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                      'attribute': [{'name': 'polarisationChannels', 'operator': 'eq', 'value': 'VV&VH', 'attribute_type': 'String'}]
                                     }
             test_case['n_products'] = 5
+            test_case['aoi_coverage'] = 0.467
         elif test_case == 'test_case5':
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aois', 'aoi4_multipolygon1.geojson'))
@@ -118,6 +123,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                                 ]
                                     }
             test_case['n_products'] = 20
+            test_case['aoi_coverage'] = 1.0
         elif test_case == 'test_case6':
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aois', 'aoi5_multipolygon2.geojson'))
@@ -127,14 +133,16 @@ def create_query_constructor_test_case(test_resources_dir):
                                     'sensing_end_date': (datetime(2021, 12, 15), datetime(2022, 1, 5, 23, 59, 59)),
                                     }
             test_case['n_products'] = 44
+            test_case['aoi_coverage'] = 1.0
         elif test_case == 'test_case7':
             test_case = {}
             test_case['settings'] = {'product_names': ['S2B_MSIL1C_20230101T102339_N0509_R065_T32UNU_20230101T105601.SAFE',
-                                                    'S1A_IW_GRDH_1SDV_20240208T053520_20240208T053545_052463_065842_F89D.SAFE',
-                                                    'S1A_IW_GRDH_1SDV_20240208T053520_20240208T053545_052463_065842_F89D-.SAFE', # deliberately wrong name
-                                                    'S3A_OL_2_WFR____20190228T092807_20190228T093107_20190301T190540_0179_042_036_2160_MAR_O_NT_002.SEN3']
+                                                       'S1A_IW_GRDH_1SDV_20240208T053520_20240208T053545_052463_065842_F89D.SAFE',
+                                                       'S1A_IW_GRDH_1SDV_20240208T053520_20240208T053545_052463_065842_F89D-.SAFE', # deliberately wrong name
+                                                       'S3A_OL_2_WFR____20190228T092807_20190228T093107_20190301T190540_0179_042_036_2160_MAR_O_NT_002.SEN3']
                                     }
             test_case['n_products'] = 3
+            test_case['aoi_coverage'] = 0.
 
         return test_case
     
@@ -167,9 +175,17 @@ def test_query_constructor(test_case, create_query_constructor_test_case):
     # special handling of query_by_name
     if 'product_names' in test_case['settings'].keys():
         products, _ = qc.query_by_name(test_case['settings']['product_names'])
-        n_products = len(products)
     else:
         qc = configure_query_constructor(qc, test_case['settings'])
-        n_products = qc.check_query()
-    assert n_products == test_case['n_products']
+        products, _ = qc.send_query()
+    assert len(products) == test_case['n_products']
+    assert qc.aoi_coverage >= test_case['aoi_coverage']
+
+    # verify that products property is the same as what is returned
+    products2 = qc.products
+    products[products.isna()] = 0.
+    products = products.sort_values('Name').reset_index(drop=True)
+    products2[products2.isna()] = 0.
+    products2 = products2.sort_values('Name').reset_index(drop=True)
+    assert np.sum((products == products2).values) == products.values.size
 
