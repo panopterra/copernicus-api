@@ -20,11 +20,11 @@ def test_resources_dir():
     """
 
     current_file_path = os.path.abspath(os.getenv('PYTEST_CURRENT_TEST')).replace('\\', '/').replace('//', '/')
-    root_dir = current_file_path.split('test/')[0]
+    root_dir = current_file_path.split('tests/')[0]
 
-    test_file_path = current_file_path.split('test/')[1]
+    test_file_path = current_file_path.split('tests/')[1]
     test_file_path = '::'.join(test_file_path.split('::')[:-1])
     test_file_path = test_file_path.replace('_test.py', '')
-    test_resources_dir = os.path.join(root_dir, 'test_resources', test_file_path).replace('\\', '/').replace('//', '/')
+    test_resources_dir = os.path.join(root_dir, 'tests/resources', test_file_path).replace('\\', '/').replace('//', '/')
     yield test_resources_dir
 

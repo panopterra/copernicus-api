@@ -85,7 +85,7 @@ important since the Copernicus API may occasionally be down or unresponsive.
 The `request_timeout` parameter determines how long a single API request is allowed
 to take before timing out. These settings should usually be left at their default values.
 Lastly, the `decimals` parameter determines the coordinate precision in AOI filters
-(i.e. the number of decimal places of coordinate values). The default is 4, which
+(i.e. the number of decimal places of coordinate values). The default is 6, which
 is sufficient in most cases.
 
 >**NOTE:** For complex AOIs with many vertices, the query string can get very long
