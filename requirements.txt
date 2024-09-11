@@ -1,7 +1,11 @@
-python>=3.10
-shapely>=2.0
+black>=24.0
+flake8>=7.0
+geopandas>=0.14
+ipykernel>=6.20
 numpy>=1.26
 pandas>=2.0
-geopandas>=0.14
 pyproj>=3.6
-ipykernel>=6.20
+pytest-cov>=4.1
+pytest>=8.0
+python>=3.10
+shapely>=2.0
