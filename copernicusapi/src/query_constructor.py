@@ -21,8 +21,10 @@ import shapely.wkt
 from shapely import Point, Polygon, MultiPolygon, make_valid
 from shapely.ops import unary_union
 
-from .response import get_checksums, get_cloud_cover, determine_group_identifier
-from .query import reduce_wkt_coordinate_precision, convert_special_characters
+from ._constants import COLLECTIONS_SUPPORTING_CLOUD_COVER, COLLECTION_PRODUCT_TYPE_MATCHES
+from .response import get_checksums, get_cloud_cover, determine_group_tile_identifier
+from .query import reduce_wkt_coordinate_precision, convert_special_characters, \
+interpret_collection_name, interpret_product_type
 from .vector import reproject_geometry
 
 
@@ -161,7 +163,7 @@ class QueryConstructor:
         # extract/unify some information from existing columns
         df['file_name'] = df['Name']
         df['file_size'] = df['ContentLength'].apply(lambda x: x / 1024 / 1024)
-        df['group_id'] = df['Name'].apply(determine_group_identifier)
+        df['group_tile_id'] = df['Name'].apply(determine_group_tile_identifier)
         df['cloud_cover'] = df['Attributes'].apply(get_cloud_cover)
         df[['checksum_md5', 'checksum_blake3']] = list(df['Checksum'].apply(get_checksums))
         df['download_path'] = df['Id'].apply(lambda x: f"https://zipper.dataspace.copernicus.eu/odata/v1/Products({x})/$value")
@@ -391,7 +393,7 @@ class QueryConstructor:
 
         # verify compatibility with collection
         if self._query_settings['collection'] is not None:
-            if self._query_settings['collection'].lower() != 'sentinel-2':
+            if self._query_settings['collection'] not in COLLECTIONS_SUPPORTING_CLOUD_COVER:
                 raise CopernicusQueryConstructorError(f"Collection of name '{self._query_settings['collection'].upper()}' does not support cloud cover filter.")
 
         if isinstance(ccover, float) or isinstance(ccover, int):
@@ -425,17 +427,27 @@ class QueryConstructor:
         None
         """
 
+        collection_name = interpret_collection_name(collection)
+        if collection_name is None:
+            raise CopernicusQueryAttributeError(f"Collection name '{collection}' not recognized.")
+        
+        # check if collection supports previously defined product type
+        product_type_name = self.query_settings['product_type']
+        if product_type_name is not None:
+            if product_type_name not in COLLECTION_PRODUCT_TYPE_MATCHES[collection_name]:
+                raise CopernicusQueryAttributeError(f"Collection '{collection_name}' does not support product type '{product_type_name}'. Valid options: {', '.join(COLLECTION_PRODUCT_TYPE_MATCHES[collection_name])}")
+
         # verify compatibility with collection
         if self._query_settings['cloud_cover'] is not None:
-            if collection.lower() != 'sentinel-2':
-                raise CopernicusQueryConstructorError(f"Collection of name '{collection.upper()}' does not support cloud cover filter.")
+            if collection_name not in COLLECTIONS_SUPPORTING_CLOUD_COVER:
+                raise CopernicusQueryConstructorError(f"Collection of name '{collection_name}' does not support cloud cover filter.")
 
-        print(f'Adding collection filter: {collection}')
+        print(f'Adding collection filter: {collection_name}')
         # only increment filter count if the same filter has not already been set before
         if 'collection' not in self._query_parts.keys():
             self._n_filters += 1
-        self._query_parts['collection'] = f"Collection/Name eq '{collection.upper()}'"
-        self._query_settings['collection'] = collection
+        self._query_parts['collection'] = f"Collection/Name eq '{collection_name}'"
+        self._query_settings['collection'] = collection_name
 
         if self.interactive and self._n_filters >= 3:
             _ = self.check_query()
@@ -455,12 +467,22 @@ class QueryConstructor:
         None
         """
 
-        print(f'Adding product type filter: {product_type.upper()}')
+        product_type_name = interpret_product_type(product_type)
+        if product_type_name is None:
+            raise CopernicusQueryAttributeError(f"Product type name '{product_type_name}' not recognized.")
+        
+        # check if provided product type is valid for the given collection
+        collection_name = self.query_settings['collection']
+        if collection_name is not None:
+            if product_type_name not in COLLECTION_PRODUCT_TYPE_MATCHES[collection_name]:
+                raise CopernicusQueryAttributeError(f"Product type '{product_type_name}' not available for collection '{collection_name}'. Valid options: {', '.join(COLLECTION_PRODUCT_TYPE_MATCHES[collection_name])}")
+
+        print(f'Adding product type filter: {product_type_name}')
         # only increment filter count if the same filter has not already been set before
         if 'product_type' not in self._query_parts.keys():
             self._n_filters += 1
-        self._query_parts['product_type'] = f"Attributes/OData.CSC.StringAttribute/any(att:att/Name eq 'productType' and att/OData.CSC.StringAttribute/Value eq '{product_type.upper()}')"
-        self._query_settings['product_type'] = product_type
+        self._query_parts['product_type'] = f"Attributes/OData.CSC.StringAttribute/any(att:att/Name eq 'productType' and att/OData.CSC.StringAttribute/Value eq '{product_type_name}')"
+        self._query_settings['product_type'] = product_type_name
 
         if self.interactive and self._n_filters >= 3:
             _ = self.check_query()
@@ -736,7 +758,10 @@ class QueryConstructor:
             try:
                 result = requests.get(query+'&$count=True&$expand=Attributes&$expand=Assets&$expand=Locations', timeout=self.request_timeout).json()
                 if '@odata.count' not in result.keys():
-                    raise CopernicusQueryConstructorError(f'Error or empty query result: {result}')
+                    if 'Invalid value' in result:
+                        raise CopernicusQueryConstructorError(f'Invalid value provided to result: {result}')
+                    else:
+                        raise CopernicusQueryConstructorError(f'Error or empty query result: {result}')
                 products = result['value']
                 break
             except Exception as e:
