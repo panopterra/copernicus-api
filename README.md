@@ -26,7 +26,7 @@ feature-complete.
 The `copernicusapi` package can simply be install via the following command:
 
 ```Bash
-pip install copernicus-api
+pip install copernicusapi
 ```
 
 <br>

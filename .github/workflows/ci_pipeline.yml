@@ -1,0 +1,78 @@
+name: CI-Pipeline
+
+on:
+  # runs on push on any branch except legacy and master
+  push:
+  workflow_dispatch: 
+
+jobs:
+  branch-ci-pipeline:
+    runs-on: ubuntu-22.04 # to be updated manually as needed
+    timeout-minutes: 30 # timeout if process hangs
+    strategy:
+      max-parallel: 2
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Sets relevant environment variables for subsequent steps
+      - name: Set environment variables
+        run: |
+          # setting cache date signature based on current date in format:
+          # YYYY-MM (YYYY=year, MM=month).
+          # For later use in determining the right cache to restore.
+          echo "DATE_SIG=$(date +'%Y-%m')" >> $GITHUB_ENV
+          # setting the full datetime string for use in report artifacts name 
+          # in format: YYYYMMDD-HHMMSS
+          echo "DATETIME=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
+          
+      # installs and sets up micromamba;
+      # caches the created environment to avoid resolving and installing the
+      # environment repeatedly
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: environment.yml
+          cache-environment: true
+          # storing cache in a file named using the OS name, a hash of the currently used environment.yml
+          # and the date set in the 'Set environment variables' step; the effect of this is that the environment is set
+          # up again from scratch (creating a new cache if the pipeline passes) only if (a) the environment.yml
+          # has changed, or (b) the date signature has changed (weekly).
+          cache-environment-key: ${{ runner.os }}-micromamba-copernicusapi-env-${{ hashFiles('environment.yml') }}-${{ env.DATE_SIG }}
+
+      # Formatting code files with Black
+      - name: Format with Black
+        run: |
+          black ./copernicusapi --verbose
+
+      # linting of any remaining issues in the code
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --output-file="./reports/flake8_linter_syntax_report.txt"
+          # run full linting but do not fail the build (exit-zero treats all errors as warnings)
+          # ignore E203 and max-line-length 88 for compatibility with Black
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics --extend-ignore=E203 --output-file="./reports/flake8_linter_report.txt"
+
+      # running unit tests
+      - name: Test with pytest/coverage
+        shell: bash -eo pipefail -l {0}
+        run: |
+          # run tests on changed code files (previously failed first), stop immediately if a test has failed;
+          # show coverage report in terminal and write report to HTML;
+          # write pytest report to txt
+          python -m pytest -m -c pytest_ci.ini -x -v --cov-report term --cov-report html:./reports/coverage_report --cov | tee ./reports/pytest_report.txt
+      
+      # archives all report files to an artifact
+      - name: Archive reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ env.DATETIME }}-${{ github.workflow }}-${{ github.run_id }}-reports
+          path: ./reports/
