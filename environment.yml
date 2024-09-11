@@ -14,3 +14,4 @@ dependencies:
   - pytest>=8.0
   - python>=3.10
   - shapely>=2.0
+  - twine>=5.0
