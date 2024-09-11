@@ -62,6 +62,7 @@ coverage.xml
 *,cover
 pytest.ini
 test_resources/
+reports/
 
 # credentials
 .env

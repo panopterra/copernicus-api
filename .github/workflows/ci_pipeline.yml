@@ -64,7 +64,6 @@ jobs:
       - name: Test with pytest/coverage
         shell: bash -eo pipefail -l {0}
         run: |
-          # run tests on changed code files (previously failed first), stop immediately if a test has failed;
           # show coverage report in terminal and write report to HTML;
           # write pytest report to txt
           python -m pytest -m -c pytest_ci.ini -x -v --cov-report term --cov-report html:./reports/coverage_report --cov | tee ./reports/pytest_report.txt
