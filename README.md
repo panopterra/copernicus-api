@@ -99,11 +99,11 @@ from shapely.geometry import Polygon
 
 # define AOI
 aoi = Polygon([(9.43111261, 50.16247502),
-               (10.83966524, 50.16247502),
-               (10.83966524, 48.43995062),
-               (9.43111261, 48.439950626),
-               (9.43111261, 50.16247502)])
-               
+               (10.83966524, 50.16247502),
+               (10.83966524, 48.43995062),
+               (9.43111261, 48.439950626),
+               (9.43111261, 50.16247502)])
+
 # define the collection
 query_constructor.add_collection_filter('sentinel-2')
 
@@ -187,6 +187,11 @@ products, result = query_constructor.send_query()
 -> Out: Retrieved 14 products (13.83 GB, 100.00% online).
 ```
 
+The information about the total size (`13.83 GB` in the example above) is calculated
+from the `ContentLength` information provided by the API for each product.
+Unfortunately, these values are not available for all products. Thus, the value
+given here should only be considered to be an estimate.
+
 >**IMPORTANT:** The `send_query()` method will always retrieve the full list of
 products matching the query, even if the result contains 1000s of items that must
 be downloaded in batches (happens automatically in the background). If your query
@@ -239,8 +244,11 @@ is a list of product names as `str` (incl. file extensions such as `.SAFE`).
 but intended solely for use on its own.
 
 ```Python
-products, result = query_constructor.query_by_name(['S1A_IW_GRDH_1SDV_20141031T161924_20141031T161949_003076_003856_634E.SAFE',
-                                        'S2A_MSIL1C_20230106T102411_N0509_R065_T32UNU_20230106T122023.SAFE'])
+products, result = query_constructor.query_by_name(
+        ['S1A_IW_GRDH_1SDV_20141031T161924_20141031T161949_003076_003856_634E.SAFE',
+         'S2A_MSIL1C_20230106T102411_N0509_R065_T32UNU_20230106T122023.SAFE'])
+
+-> Out: Retrieved 2 products (2.37 GB, 100.00% online).
 ```
 
 <br>
