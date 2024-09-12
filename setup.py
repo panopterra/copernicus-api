@@ -6,7 +6,7 @@ with open('README.md', 'r') as f:
 
 # run setup
 setup(name='copernicusapi',
-      version='0.0.1',
+      version='0.1.0',
       description='A package to facilitate interactive construction of queries to the Copernicus Data Space Ecosystem repository.',
       package_dir={'copernicusapi': 'copernicusapi'},
       packages=find_packages(),

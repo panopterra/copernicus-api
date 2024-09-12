@@ -110,7 +110,7 @@ def interpret_collection_name(collection_name : str) -> str:
         return 'SENTINEL-6'
     elif collection_name in ('sentinel1rtc', 's1rtc'):
         return 'SENTINEL-1-RTC'
-    elif collection_name in ('globalmosaics',):
+    elif collection_name in ('globalmosaics', 'mosaics'):
         return 'GLOBAL-MOSAICS'
     elif collection_name in ('smos',):
         return 'SMOS'
