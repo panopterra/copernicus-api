@@ -77,6 +77,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                     }
             test_case['n_products'] = 9
             test_case['aoi_coverage'] = 1.0
+            test_case['nans'] = 0.04
         elif test_case == 'test_case2':
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aoi1_point.geojson'))
@@ -88,6 +89,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                     }
             test_case['n_products'] = 4
             test_case['aoi_coverage'] = 1.0
+            test_case['nans'] = 0.07
         elif test_case == 'test_case3':
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aoi2_polygon.geojson'))
@@ -99,6 +101,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                     }
             test_case['n_products'] = 7
             test_case['aoi_coverage'] = 0.999
+            test_case['nans'] = 0.04
         elif test_case == 'test_case4':
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aoi3_self_intersecting_polygon.geojson'))
@@ -110,12 +113,13 @@ def create_query_constructor_test_case(test_resources_dir):
                                     }
             test_case['n_products'] = 5
             test_case['aoi_coverage'] = 0.467
+            test_case['nans'] = 0.04
         elif test_case == 'test_case5':
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aoi4_multipolygon1.geojson'))
             test_case['settings'] = {'aoi': gdf['geometry'].values.tolist()[0],
                                     'collection': 'sentinel-3',
-                                    'product_type': 'OL_2_LFR___',
+                                    'product_type': 'OL_2 lfr',
                                     'sensing_end_date': (datetime(2018, 8, 22, 0, 3, 56), datetime(2018, 9, 2, 23, 59, 59)),
                                     'attribute': [{'name': 'orbitDirection', 'operator': 'eq', 'value': 'DESCENDING', 'attribute_type': 'String'},
                                                 {'name': 'processingLevel', 'operator': 'eq', 'value': '2', 'attribute_type': 'String'}
@@ -123,6 +127,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                     }
             test_case['n_products'] = 20
             test_case['aoi_coverage'] = 1.0
+            test_case['nans'] = 0.1
         elif test_case == 'test_case6':
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aoi5_multipolygon2.geojson'))
@@ -133,6 +138,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                     }
             test_case['n_products'] = 44
             test_case['aoi_coverage'] = 1.0
+            test_case['nans'] = 0.08
         elif test_case == 'test_case7':
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aoi1_point.geojson'))
@@ -143,6 +149,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                     }
             test_case['n_products'] = 6
             test_case['aoi_coverage'] = 1.0
+            test_case['nans'] = 0.13
         elif test_case == 'test_case8':
             test_case = {}
             test_case['settings'] = {'product_names': ['S2B_MSIL1C_20230101T102339_N0509_R065_T32UNU_20230101T105601.SAFE',
@@ -152,6 +159,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                     }
             test_case['n_products'] = 3
             test_case['aoi_coverage'] = 0.
+            test_case['nans'] = 0.05
 
         return test_case
     
@@ -190,6 +198,10 @@ def test_query_constructor(test_case, create_query_constructor_test_case):
         products, _ = qc.send_query()
     assert len(products) == test_case['n_products']
     assert qc.aoi_coverage >= test_case['aoi_coverage']
+
+    # check that products dataframe does not contain a large number of NaNs (may
+    # indicate problems with extracting additional columns)
+    assert float(np.sum(products.isna().values) / products.values.size) <= test_case['nans']
 
     # verify that products property is the same as what is returned
     products2 = qc.products

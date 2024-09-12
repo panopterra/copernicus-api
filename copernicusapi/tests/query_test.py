@@ -48,43 +48,42 @@ PRODUCT_TYPE_TEST_CASES = {
                             'boa': 'S2MSI2A',
 
                             # Sentinel-3 OLCI
-                            'ol1efr': 'EFR',
-                            'err': 'ERR',
-                            'ol2-wfr': 'WFR',
-                            'OLCIwrr': 'WRR',
-                            'olci LFR': 'LFR',
-                            'lrr': 'LRR',
+                            'ol1efr': 'OL_1_EFR___',
+                            'err': 'OL_1_ERR___',
+                            'ol2-wfr': 'OL_2_WFR___',
+                            'OLCIwrr': 'OL_2_WRR___',
+                            'olci LFR': 'OL_2_LFR___',
+                            'lrr': 'OL_2_LRR___',
 
                             # Sentinel-3 SLSTR
-                            'rbt': 'RBT',
-                            'sl2lst': 'LST',
-                            'slstrwst': 'WST',
-                            'wct': 'WCT',
-                            'sl2frp': 'FRP',
+                            'rbt': 'SL_1_RBT___',
+                            'sl2lst': 'SL_2_LST___',
+                            'slstrwst': 'SL_2_WST___',
+                            'sl2frp': 'SL_2_FRP___',
 
                             # Sentinel-3 SRAL
-                            'sr1sra': 'SRA',
-                            'sraa': 'SRA_A',
-                            'SRALsrabs': 'SRA_BS',
-                            'lan': 'LAN',
-                            'LAN-HY': 'LAN_HY',
-                            'LAN SI': 'LAN_SI',
-                            'SRAL LAN LI': 'LAN_LI',
-                            'wat': 'WAT',
+                            'sr1sra': 'SR_1_SRA___',
+                            'sraa': 'SR_1_SRA_A_',
+                            'SRALsrabs': 'SR_1_SRA_BS',
+                            'lan': 'SR_2_LAN___',
+                            'LAN-HY': 'SR_2_LAN_HY',
+                            'LAN SI': 'SR_2_LAN_SI',
+                            'SRAL LAN LI': 'SR_2_LAN_LI',
+                            'wat': 'SR_2_WAT___',
 
                             # Sentinel-3 Synergy
-                            'Synergy': 'SYN',
-                            'Vegetationp': 'VGP',
-                            'vG1': 'VG1',
-                            'Vegetation S10': 'VG10',
-                            'Aerosol Optical Depth': 'AOD',
+                            'Synergy': 'SY_2_SYN___',
+                            'Vegetationp': 'SY_2_VGP___',
+                            'vG1': 'SY_2_VG1___',
+                            'Vegetation S10': 'SY_2_V10___',
+                            'Aerosol Optical Depth': 'SY_2_AOD___',
 
                             # Sentinel-5p
                             'l1bra1': 'L1B_RA_BD1',
                             'RA3': 'L1B_RA_BD3',
                             'L1B RA5': 'L1B_RA_BD5',
-                            'IR SIR': 'IR_SIR',
-                            'L1B IRUVN': 'IR_UVN',
+                            'IR SIR': 'L1B_IR_SIR',
+                            'L1B IRUVN': 'L1B_IR_UVN',
                             'L2 O3': 'L2__O3____',
                             'O3 TCL': 'L2__O3_TCL',
                             'O3pr': 'L2__O3__PR',
@@ -95,6 +94,13 @@ PRODUCT_TYPE_TEST_CASES = {
                             'L2cloud': 'L2__CLOUD_',
                             'L2 AER AI': 'L2__AER_AI',
                             'aer Lh': 'L2__AER_LH',
+
+                            # Sentinel-6
+                            'S-6 MW2 AMR': 'MW_2__AMR____',
+                            'S-6 P4 1B lr': 'P4_1B_LR_____',
+                            'S-6 P4 1B Hr': 'P4_1B_HR_____',
+                            'P4 2 LR': 'P4_2__LR_____',
+                            'S-6 P4 2hr': 'P4_2__HR_____',
 
                             # Landsat-5
                             'l1g': 'L1G',
@@ -136,7 +142,7 @@ def test_interpret_collection_name():
     assert interpret_collection_name('Smos') == 'SMOS'
 
     # ENVISAT
-    for collection in ('envi-sat', 'MERIS'):
+    for collection in ('envi-sat', ):
         assert interpret_collection_name(collection) == 'ENVISAT'
 
     # Landsat missions
