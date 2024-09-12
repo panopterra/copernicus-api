@@ -114,7 +114,7 @@ def interpret_collection_name(collection_name : str) -> str:
         return 'GLOBAL-MOSAICS'
     elif collection_name in ('smos',):
         return 'SMOS'
-    elif collection_name in ('envisat', 'meris'):
+    elif collection_name in ('envisat', ):
         return 'ENVISAT'
     elif collection_name in ('landsat5', 'l5', 'ls5'):
         return 'LANDSAT-5'
@@ -128,7 +128,7 @@ def interpret_collection_name(collection_name : str) -> str:
         return 'TERRAAQUA'
     elif collection_name in ('s2glc', 'globallandcover', 'glc'):
         return 'S2GLC'
-    elif collection_name in ('ccm', 'copernicuscontributingmissions'):
+    elif collection_name in ('ccm', 'copernicuscontributingmissions', 'contributingmissions'):
         return 'CCM'
     else:
         return None
@@ -159,10 +159,12 @@ def interpret_product_type(product_type_name : str) -> str:
         return 'CARD-COH6'
     elif product_type_name in ('raw', 'l0', 'level0'):
         return 'RAW'
-    elif product_type_name in ('slc', 'singlelookcomplex', 'level1slc'):
+    elif product_type_name in ('slc', 'singlelookcomplex', 'level1slc', 'l1slc'):
         return 'SLC'
-    elif product_type_name in ('grd', 'groundrangedetected', 'level1grd'):
+    elif product_type_name in ('grd', 'groundrangedetected', 'level1grd', 'l1grd'):
         return 'GRD'
+    elif product_type_name in ('grdh', 'groundrangedetectedhighresolution', 'level1grdh', 'l1grdh'):
+        return 'GRDH'
     elif product_type_name in ('ocn', 'ocean', 'l2', 'level2'):
         return 'OCN'
 
@@ -174,68 +176,66 @@ def interpret_product_type(product_type_name : str) -> str:
     
     # Sentinel-3 OLCI
     elif product_type_name in ('ol1efr', 'efr', 'olciefr'):
-        return 'EFR'
+        return 'OL_1_EFR___'
     elif product_type_name in ('ol1err', 'err', 'olcierr'):
-        return 'ERR'
+        return 'OL_1_ERR___'
     elif product_type_name in ('ol2wfr', 'wfr', 'olciwfr'):
-        return 'WFR'
+        return 'OL_2_WFR___'
     elif product_type_name in ('ol2wrr', 'wrr', 'olciwrr'):
-        return 'WRR'
+        return 'OL_2_WRR___'
     elif product_type_name in ('ol2lfr', 'lfr', 'olcilfr'):
-        return 'LFR'
+        return 'OL_2_LFR___'
     elif product_type_name in ('ol2lrr', 'lrr', 'olcilrr'):
-        return 'LRR'
+        return 'OL_2_LRR___'
     
     # Sentinel-3 SLSTR
     elif product_type_name in ('sl1rbt', 'rbt', 'slstrrbt'):
-        return 'RBT'
+        return 'SL_1_RBT___'
     elif product_type_name in ('sl2lst', 'lst', 'slstrlst'):
-        return 'LST'
+        return 'SL_2_LST___'
     elif product_type_name in ('sl2wst', 'wst', 'slstrwst'):
-        return 'WST'
-    elif product_type_name in ('sl2wct', 'wct', 'slstrwct'):
-        return 'WCT'
+        return 'SL_2_WST___'
     elif product_type_name in ('sl2frp', 'frp', 'slstrfrp'):
-        return 'FRP'
+        return 'SL_2_FRP___'
     
     # Sentinel-3 SRAL (Altimetry)
-    elif product_type_name in ('sr1sra', 'sra', 'sralsra'):
-        return 'SRA'
-    elif product_type_name in ('sr1sraa', 'sraa', 'sralsraa'):
-        return 'SRA_A'
-    elif product_type_name in ('sr1srabs', 'srabs', 'sralsrabs'):
-        return 'SRA_BS'
-    elif product_type_name in ('lan', 'srallan'):
-        return 'LAN'
-    elif product_type_name in ('lanhy', 'srallanhy'):
-        return 'LAN_HY'
-    elif product_type_name in ('lansi', 'srallansi'):
-        return 'LAN_SI'
-    elif product_type_name in ('lanli', 'srallanli'):
-        return 'LAN_LI'
-    elif product_type_name in ('wat', 'sralwat'):
-        return 'WAT'
+    elif product_type_name in ('sr1sraa', 'sraa', 'sralsraa', 'l1a', 'level1a'):
+        return 'SR_1_SRA_A_'
+    elif product_type_name in ('sr1sra', 'sra', 'sralsra', 'l1b', 'level1b'):
+        return 'SR_1_SRA___'
+    elif product_type_name in ('sr1srabs', 'srabs', 'sralsrabs', 'l1bs', 'level1bs'):
+        return 'SR_1_SRA_BS'
+    elif product_type_name in ('sr2lan', 'lan', 'srallan', 'land'):
+        return 'SR_2_LAN___'
+    elif product_type_name in ('sr2lanhy', 'lanhy', 'srallanhy', 'hydrology'):
+        return 'SR_2_LAN_HY'
+    elif product_type_name in ('sr2lansi', 'lansi', 'srallansi', 'seaice'):
+        return 'SR_2_LAN_SI'
+    elif product_type_name in ('sr2lanli', 'lanli', 'srallanli', 'landice'):
+        return 'SR_2_LAN_LI'
+    elif product_type_name in ('sr2wat', 'wat', 'sralwat', 'water'):
+        return 'SR_2_WAT___'
 
     # Sentinel-3 Synergy
-    elif product_type_name in ('syn', 'synergy'):
-        return 'SYN'
-    elif product_type_name in ('vgp', 'vegetationp'):
-        return 'VGP'
-    elif product_type_name in ('vg1', 'vegetations1'):
-        return 'VG1'
-    elif product_type_name in ('vg10', 'v10', 'vegetations10'):
-        return 'VG10'
-    elif product_type_name in ('aod', 'aerosol', 'aerosolopticaldepth', 'opticaldepth'):
-        return 'AOD'
+    elif product_type_name in ('sy2syn', 'syn', 'synergy'):
+        return 'SY_2_SYN___'
+    elif product_type_name in ('sy2vgp', 'vgp', 'vegetationp'):
+        return 'SY_2_VGP___'
+    elif product_type_name in ('sy2vg1', 'vg1', 'vegetations1'):
+        return 'SY_2_VG1___'
+    elif product_type_name in ('sy2v10', 'vg10', 'v10', 'vegetations10'):
+        return 'SY_2_V10___'
+    elif product_type_name in ('aod', 'aerosol', 'aerosolopticaldepth', 'opticaldepth', 'sy2aod'):
+        return 'SY_2_AOD___'
     
     # Sentinel-5p
     elif product_type_name.startswith(('l1bra', 'ra')):
         band_id = product_type_name[-1]
         return f'L1B_RA_BD{band_id}'
     elif product_type_name in ('l1birsir', 'irsir'):
-        return 'IR_SIR'
+        return 'L1B_IR_SIR'
     elif product_type_name in ('l1biruvn', 'iruvn'):
-        return 'IR_UVN'
+        return 'L1B_IR_UVN'
     elif product_type_name in ('l2o3', 'o3'):
         return 'L2__O3____'
     elif product_type_name in ('l2o3tcl', 'o3tcl'):
@@ -257,6 +257,30 @@ def interpret_product_type(product_type_name : str) -> str:
     elif product_type_name in ('l2aerlh', 'aerlh'):
         return 'L2__AER_LH'
     
+    # Sentinel-6
+    elif product_type_name in ('s6mw2amr', 'mw2amr'):
+        return 'MW_2__AMR____'
+    elif product_type_name in ('s6p41blr', 'p41blr'):
+        return 'P4_1B_LR_____'
+    elif product_type_name in ('s6p41bhr', 'p41bhr'):
+        return 'P4_1B_HR_____'
+    elif product_type_name in ('s6p42lr', 'p42lr'):
+        return 'P4_2__LR_____'
+    elif product_type_name in ('s6p42hr', 'p42hr'):
+        return 'P4_2__HR_____'
+    
+    # Sentinel-1 RTC
+    elif product_type_name in ('rtc', 'radiometricterraincorrected'):
+        return 'RTC'
+    
+    # Global Mosaics
+    elif product_type_name in ('s2msil3mcq', 's2quarterly', 's2quarterlymosaic'):
+        return 'S2MSI_L3__MCQ'
+    elif product_type_name in ('s1sarl3iwmcm', 's1iwmonthly', 's1iwmonthlymosaic'):
+        return 'S1SAR_L3_IW_MCM'
+    elif product_type_name in ('s1sarl3dhmcm', 's1dhmonthly', 's1dhmonthlymosaic'):
+        return 'S1SAR_L3_DH_MCM'
+
     # Landsat-5
     elif product_type_name in ('l1g', 'level1g', 'ground', 'georeferenced'):
         return 'L1G'
@@ -270,7 +294,7 @@ def interpret_product_type(product_type_name : str) -> str:
         return 'GTC_1P'
     
     # Landsat-8
-    elif product_type_name in ('l1tp', 'level1tp', 'terrainp', 'terraincorrectedp'):
+    elif product_type_name in ('l1tp', 'level1tp', 'precisionterrain', 'precisionterraincorrected'):
         return 'L1TP'
     elif product_type_name in ('l2sp', 'level2sp', 'surfacereflectance', 'sr'):
         return 'L2SP'

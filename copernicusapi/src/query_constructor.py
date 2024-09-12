@@ -22,7 +22,7 @@ from shapely import Point, Polygon, MultiPolygon, make_valid
 from shapely.ops import unary_union
 
 from ._constants import COLLECTIONS_SUPPORTING_CLOUD_COVER, COLLECTION_PRODUCT_TYPE_MATCHES
-from .response import get_checksums, get_cloud_cover, determine_group_tile_identifier
+from .response import get_checksums, get_cloud_cover, get_product_type, determine_group_tile_identifier
 from .query import reduce_wkt_coordinate_precision, convert_special_characters, \
 interpret_collection_name, interpret_product_type
 from .vector import reproject_geometry
@@ -165,8 +165,9 @@ class QueryConstructor:
         df['file_size'] = df['ContentLength'].apply(lambda x: x / 1024 / 1024)
         df['group_tile_id'] = df['Name'].apply(determine_group_tile_identifier)
         df['cloud_cover'] = df['Attributes'].apply(get_cloud_cover)
+        df['product_type'] = df['Attributes'].apply(get_product_type)
         df[['checksum_md5', 'checksum_blake3']] = list(df['Checksum'].apply(get_checksums))
-        df['download_path'] = df['Id'].apply(lambda x: f"https://zipper.dataspace.copernicus.eu/odata/v1/Products({x})/$value")
+        df['download_url'] = df['Id'].apply(lambda x: f"https://download.dataspace.copernicus.eu/odata/v1/Products({x})/$value")
         df['geometry'] = df['Footprint'].apply(lambda x: shapely.wkt.loads(x.split(';')[-1].strip("'\"")).buffer(0))
 
         # convert date strings to datetime objects; omitting milliseconds for compatibility
@@ -214,6 +215,14 @@ class QueryConstructor:
             else:
                 return np.round(self._products.unary_union.intersection(self.query_settings['aoi']).area / self.query_settings['aoi'].area, 5)
     
+    @property
+    def api_response(self):
+        """
+        Returns the API response (JSON) of the latest call of send_query().
+        """
+
+        return self._latest_result
+        
     @property
     def products(self):
         """
@@ -434,8 +443,11 @@ class QueryConstructor:
         # check if collection supports previously defined product type
         product_type_name = self.query_settings['product_type']
         if product_type_name is not None:
-            if product_type_name not in COLLECTION_PRODUCT_TYPE_MATCHES[collection_name]:
-                raise CopernicusQueryAttributeError(f"Collection '{collection_name}' does not support product type '{product_type_name}'. Valid options: {', '.join(COLLECTION_PRODUCT_TYPE_MATCHES[collection_name])}")
+            # if value in dictionary is None, indicates that there is no specific
+            # set of allowed product type names
+            if COLLECTION_PRODUCT_TYPE_MATCHES[collection_name] is not None:
+                if product_type_name not in COLLECTION_PRODUCT_TYPE_MATCHES[collection_name]:
+                    raise CopernicusQueryAttributeError(f"Collection '{collection_name}' does not support product type '{product_type_name}'. Valid options: {', '.join(COLLECTION_PRODUCT_TYPE_MATCHES[collection_name])}")
 
         # verify compatibility with collection
         if self._query_settings['cloud_cover'] is not None:
@@ -469,13 +481,16 @@ class QueryConstructor:
 
         product_type_name = interpret_product_type(product_type)
         if product_type_name is None:
-            raise CopernicusQueryAttributeError(f"Product type name '{product_type_name}' not recognized.")
+            raise CopernicusQueryAttributeError(f"Product type name '{product_type}' not recognized.")
         
         # check if provided product type is valid for the given collection
         collection_name = self.query_settings['collection']
         if collection_name is not None:
-            if product_type_name not in COLLECTION_PRODUCT_TYPE_MATCHES[collection_name]:
-                raise CopernicusQueryAttributeError(f"Product type '{product_type_name}' not available for collection '{collection_name}'. Valid options: {', '.join(COLLECTION_PRODUCT_TYPE_MATCHES[collection_name])}")
+            # if value in dictionary is None, indicates that there is no specific
+            # set of allowed product type names
+            if COLLECTION_PRODUCT_TYPE_MATCHES[collection_name] is not None:
+                if product_type_name not in COLLECTION_PRODUCT_TYPE_MATCHES[collection_name]:
+                    raise CopernicusQueryAttributeError(f"Product type '{product_type_name}' not available for collection '{collection_name}'. Valid options: {', '.join(COLLECTION_PRODUCT_TYPE_MATCHES[collection_name])}")
 
         print(f'Adding product type filter: {product_type_name}')
         # only increment filter count if the same filter has not already been set before

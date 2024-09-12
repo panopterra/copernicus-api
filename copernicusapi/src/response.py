@@ -71,6 +71,32 @@ def get_cloud_cover(attributes : list[dict]) -> float:
         return np.nan
 
 
+def get_product_type(attributes : list[dict]) -> float:
+    """
+    Retrieves the product type from attributes list of a product.
+    NOTE: intended for use in pandas/geopandas .apply().
+    
+    Parameters
+    ----------
+    attributes : list of dict
+        The attributes list as obtained from API result (from the 'Attributes' entry).
+    
+    Returns
+    -------
+    float
+        The product type. Returns np.nan if no 'productType' attribute was found.
+    """
+
+    if len(attributes) == 0:
+        return np.nan
+    else:
+        for item in attributes:
+            if 'Name' in item.keys():
+                if item['Name'] == 'productType':
+                    return str(item['Value'])
+        return np.nan
+
+
 def determine_group_tile_identifier(name : str) -> str:
     """
     Retrieves the unique group/tile identification information from a product name.
@@ -88,7 +114,8 @@ def determine_group_tile_identifier(name : str) -> str:
 
     Notes
     -----
-    Currently only implemented for Sentinel-1, Sentinel-2, Sentinel-3 and Sentinel-5 products.
+    Currently only implemented for Sentinel-1, Sentinel-2, Sentinel-3 and Sentinel-5p
+    products.
     """
 
     name_parts = [p for p in name.split('_') if len(p) > 0]
