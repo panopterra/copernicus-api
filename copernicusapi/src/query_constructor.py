@@ -5,6 +5,15 @@
 # 
 # (c) 2024 Panopterra UG (haftungsbeschraenkt)
 # 
+# This file is part of the copernicusapi package and the copernicus-api repository
+# (https://github.com/panopterra/copernicus-api). It is released under the Apache
+# License Version 2.0. See the README.md file in the repository root directory or
+# go to http://www.apache.org/licenses/ for full license details.
+# 
+# ---
+# 
+# This module contains the main QueryConstructor class.
+# 
 # ---
 
 # ## Load packages and modules
@@ -213,7 +222,7 @@ class QueryConstructor:
             if self.query_settings['aoi'].area == 0:
                 return 1.
             else:
-                return np.round(self._products.unary_union.intersection(self.query_settings['aoi']).area / self.query_settings['aoi'].area, 5)
+                return float(np.round(self._products.unary_union.intersection(self.query_settings['aoi']).area / self.query_settings['aoi'].area, 5))
     
     @property
     def api_response(self):

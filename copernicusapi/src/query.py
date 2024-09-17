@@ -2,9 +2,19 @@
 # coding: utf-8
 
 # # Query
+# 
 # (c) 2024 Panopterra UG (haftungsbeschraenkt)
 # 
+# This file is part of the copernicusapi package and the copernicus-api repository
+# (https://github.com/panopterra/copernicus-api). It is released under the Apache
+# License Version 2.0. See the README.md file in the repository root directory or
+# go to http://www.apache.org/licenses/ for full license details.
+# 
+# ---
+# 
 # This module contains utilities to prepare settings for a valid API query string.
+# 
+# ---
 
 def reduce_wkt_coordinate_precision(wkt_str : str,
                                     decimals : int = 4) -> str:

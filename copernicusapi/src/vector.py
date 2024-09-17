@@ -5,7 +5,16 @@
 # 
 # (c) 2024 Panopterra UG (haftungsbeschraenkt)
 # 
+# This file is part of the copernicusapi package and the copernicus-api repository
+# (https://github.com/panopterra/copernicus-api). It is released under the Apache
+# License Version 2.0. See the README.md file in the repository root directory or
+# go to http://www.apache.org/licenses/ for full license details.
+# 
+# ---
+# 
 # This module contains utilities for operations on vector geometries.
+# 
+# ---
 
 import pyproj
 import shapely
