@@ -78,6 +78,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                      'collection': 'sentinel-2',
                                      'product_type': 'l2a',
                                      'sensing_start_date': (datetime(2023, 7, 5), '2023-10-28T19:33:12.021Z'),
+                                     'publication_date': (datetime(2023, 1, 1), datetime(2023, 12, 31)),
                                      'cloud_cover': 35
                                     }
             test_case['n_products'] = 9
@@ -90,9 +91,10 @@ def create_query_constructor_test_case(test_resources_dir):
                                      'collection': 's2',
                                      'product_type': 'level1c',
                                      'sensing_end_date': ('2020-05-01T03:24:33.998Z', '2020-08-11T22:00:11.633Z'),
+                                     'publication_date': (datetime(2023, 1, 1), datetime(2023, 12, 31)),
                                      'cloud_cover': (10, 22),
                                     }
-            test_case['n_products'] = 4
+            test_case['n_products'] = 2
             test_case['aoi_coverage'] = 1.0
             test_case['nans'] = 0.07
         elif test_case == 'test_case3':
@@ -102,6 +104,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                     'collection': 's1',
                                     'product_type': 'grd',
                                     'sensing_end_date': (datetime(2016, 9, 28), datetime(2016, 10, 23, 21, 31, 22)),
+                                    'publication_date': (datetime(2016, 1, 1), datetime(2017, 12, 31)),
                                     'attribute': [{'name': 'orbitDirection', 'operator': 'eq', 'value': 'ASCENDING', 'attribute_type': 'String'}]
                                     }
             test_case['n_products'] = 7
@@ -114,6 +117,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                      'collection': 'sentinel-1',
                                      'product_type': 'slc',
                                      'sensing_end_date': (datetime(2018, 8, 7, 0, 52, 11), datetime(2018, 8, 12)),
+                                     'publication_date': (datetime(2018, 1, 1), datetime(2019, 12, 31)),
                                      'attribute': [{'name': 'polarisationChannels', 'operator': 'eq', 'value': 'VV&VH', 'attribute_type': 'String'}]
                                     }
             test_case['n_products'] = 5
@@ -126,6 +130,7 @@ def create_query_constructor_test_case(test_resources_dir):
                                     'collection': 'sentinel-3',
                                     'product_type': 'OL_2 lfr',
                                     'sensing_end_date': (datetime(2018, 8, 22, 0, 3, 56), datetime(2018, 9, 2, 23, 59, 59)),
+                                    'publication_date': (datetime(2018, 1, 1), datetime(2020, 12, 31)),
                                     'attribute': [{'name': 'orbitDirection', 'operator': 'eq', 'value': 'DESCENDING', 'attribute_type': 'String'},
                                                 {'name': 'processingLevel', 'operator': 'eq', 'value': '2', 'attribute_type': 'String'}
                                                 ]
@@ -140,19 +145,22 @@ def create_query_constructor_test_case(test_resources_dir):
                                     'collection': 'sentinel-5p',
                                     'product_type': 'L2CH4',
                                     'sensing_end_date': (datetime(2021, 12, 15), datetime(2022, 1, 5, 23, 59, 59)),
+                                    'publication_date': (datetime(2023, 1, 1), datetime(2023, 12, 31)),
                                     }
-            test_case['n_products'] = 44
+            test_case['n_products'] = 22
             test_case['aoi_coverage'] = 1.0
             test_case['nans'] = 0.08
         elif test_case == 'test_case7':
             test_case = {}
             gdf = gpd.read_file(os.path.join(test_resources_dir, 'aoi1_point.geojson'))
             test_case['settings'] = {'aoi': gdf['geometry'].values.tolist()[0],
-                                    'collection': 'l8',
+                                    'collection': 'LS8ESA',
                                     'product_type': 'L1 GT',
-                                    'sensing_end_date': ('2015-05-05T19:33:12.021Z', datetime(2015, 6, 28)),
+                                    'sensing_end_date': ('2015-05-05T19:33:12.021Z', datetime(2015, 8, 28)),
+                                    'publication_date': (datetime(2015, 1, 1), datetime(2018, 12, 31)),
+                                    'cloud_cover': (0, 80),
                                     }
-            test_case['n_products'] = 6
+            test_case['n_products'] = 4
             test_case['aoi_coverage'] = 1.0
             test_case['nans'] = 0.13
         elif test_case == 'test_case8':
