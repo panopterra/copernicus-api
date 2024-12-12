@@ -308,7 +308,7 @@ aliases (see tables below). The same homogenization is applied to these as well.
 | Global Mosaics                          | `GLOBAL-MOSAICS` | `Mosaics`                                                   |
 | Landsat-5                               | `LANDSAT-5`      | `L5`, `LS5`                                                 |
 | Landsat-7                               | `LANDSAT-7`      | `L7`, `LS7`                                                 |
-| Landsat-5                               | `LANDSAT-8`      | `L8`, `LS8`                                                 |
+| Landsat-8                               | `LANDSAT-8-ESA`  | `Landsat-8`, `L8`, `LS8`, `L8ESA`, `LS8ESA`                 |
 | MODIS Terra/Aqua                        | `TERRAAQUA`      | `Terra`, `Aqua`, `MODIS`                                    |
 | Sentinel-2 Global Land Cover            | `S2GLC`          | `Global Land Cover`, `GLC`                                  |
 | Soil Moisture and Ocean Salinity (SMOS) | `SMOS`           | `-`                                                         |
@@ -392,17 +392,17 @@ that was returned by the API. Further, it contains some additional columns:
 6. `download_url`: the full download URL of the product.
 7. `file_name`: equivalent to `Name` column.
 8. `file_size`: the file size in MB (calculated from `ContentLength` if available).
-9.  `footprint_size`: the total area of the footprint in km² (in Web Mercator, EPSG:3857).
+9. `footprint_size`: the total area of the footprint in km² (in Web Mercator, EPSG:3857).
 10. `geometry`: the footprint used as the `geometry` column of the `GeoDataFrame`.
 11. `group_tile_id`: a custom unique identifier of tiles (only supported for
 Sentinel-1/-2/-3/-5p products). This is using parts of the product name and is not
 to be confused with the `productGroupId` attribute.
 12. `product_type` the type of a product (taken from product attributes, if available).
-12.  `publication_date`: publication date as a `datetime.datetime`/`pd.TimeStamp`
+13. `publication_date`: publication date as a `datetime.datetime`/`pd.TimeStamp`
 object (obtained from `PublicationDate`).
-13.  `sensing_end_date`: sensing end date as a `datetime.datetime`/`pd.TimeStamp`
+14. `sensing_end_date`: sensing end date as a `datetime.datetime`/`pd.TimeStamp`
 object (obtained from `ContentDate`).
-14.  `sensing_start_date`: sensing start date as a `datetime.datetime`/`pd.TimeStamp`
+15. `sensing_start_date`: sensing start date as a `datetime.datetime`/`pd.TimeStamp`
 object (obtained from `ContentDate`).
 
 >**IMPORTANT:** Some of these columns may be empty (`NaN`/`None`) for some collections
