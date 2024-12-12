@@ -151,7 +151,7 @@ def test_interpret_collection_name():
         assert interpret_collection_name(collection) == 'ENVISAT'
 
     # Landsat missions
-    for mission_number in ('5', '7', '8'):
+    for mission_number in ('5', '7', '8-ESA'):
         for collection_root in ('Landsat', 'LandSAT-', 'L', 'Ls'):
             assert interpret_collection_name(f'{collection_root}{mission_number}') == f'LANDSAT-{mission_number}'
     

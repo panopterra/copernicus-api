@@ -130,8 +130,8 @@ def interpret_collection_name(collection_name : str) -> str:
         return 'LANDSAT-5'
     elif collection_name in ('landsat7', 'l7', 'ls7'):
         return 'LANDSAT-7'
-    elif collection_name in ('landsat8', 'l8', 'ls8'):
-        return 'LANDSAT-8'
+    elif collection_name in ('landsat8esa', 'landsat8', 'l8', 'ls8', 'l8esa', 'ls8esa'):
+        return 'LANDSAT-8-ESA'
     elif collection_name in ('copdem', 'copernicusdem'):
         return 'COP-DEM'
     elif collection_name in ('terraaqua', 'terra', 'aqua', 'modis'):

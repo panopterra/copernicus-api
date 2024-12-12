@@ -18,7 +18,7 @@
 
 # ### Constants
 
-COLLECTIONS_SUPPORTING_CLOUD_COVER = ('SENTINEL-2', 'LANDSAT-5', 'LANDSAT-7', 'LANDSAT-8')
+COLLECTIONS_SUPPORTING_CLOUD_COVER = ('SENTINEL-2', 'LANDSAT-5', 'LANDSAT-7', 'LANDSAT-8-ESA')
 
 
 COLLECTION_PRODUCT_TYPE_MATCHES = {'SENTINEL-1': ('CARD-BS', 'CARD-COH6', 'RAW', 'SLC', 'GRD', 'GRDH', 'OCN'),
@@ -41,6 +41,6 @@ COLLECTION_PRODUCT_TYPE_MATCHES = {'SENTINEL-1': ('CARD-BS', 'CARD-COH6', 'RAW',
                                    'ENVISAT': None,
                                    'LANDSAT-5': ('L1G', 'L1T'),
                                    'LANDSAT-7': ('L1G', 'L1T', 'L1GT', 'GTC_1P'),
-                                   'LANDSAT-8': ('L1T', 'L1GT', 'L1TP', 'L2SP'),
+                                   'LANDSAT-8-ESA': ('L1T', 'L1GT', 'L1TP', 'L2SP'),
                                    }
 
